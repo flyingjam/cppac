@@ -1,7 +1,7 @@
-OBJS = main.cpp ShaderProgram.cpp Texture.cpp
+OBJS = main.cpp Vertex.cpp ShaderProgram.cpp Texture.cpp glad.c
 CC = clang++
-FLAGS = -std=c++11
-LINKER =  -I/include -lsfml-graphics -lsfml-window -lsfml-system -lGL -lGLEW
+FLAGS = -std=c++11 -Wall
+LINKER =  -I/include -lsfml-graphics -lsfml-window -lsfml-system -lGL -ldl
 OBJ_NAME = game
 
 all:

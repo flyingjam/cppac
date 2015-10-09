@@ -1,49 +1,16 @@
 #include <iostream>
-#include <GL/glew.h>
+#include "include/glad.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 #include "include/ShaderProgram.h"
 #include "include/Texture.h"
+#include "include/Vertex.h"
 
-struct Position{
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-};
-
-struct TexCoords{
-    GLfloat x;
-    GLfloat y;
-};
-
-class Vertex{
-    public:
-        Vertex(float x, float y, float z, float tx, float ty);
-        Vertex(float x, float y);
-       Position pos;
-       TexCoords tex;       
-};
-
-Vertex::Vertex(float x, float y){
-    pos.x = x;
-    pos.y = y;
-    pos.z = 1.f;
-
-    tex.x = 1.f;
-    tex.y = 1.f;
-}
-
-Vertex::Vertex(float x, float y, float z, float tx, float ty){
-    pos.x = x;
-    pos.y = y;
-    pos.z = z;
-    tex.x = tx;
-    tex.y = ty;
-}
 
 int main(){
     sf::Window window(sf::VideoMode(800, 600), "OpenGL");
-    glewInit();
+    //glewInit();
+    gladLoadGL(); 
     /*
     GLfloat vertices[] = {
        -0.5f, -0.5f, 0.0f,
@@ -67,11 +34,11 @@ int main(){
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
     //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
     
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture));
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);

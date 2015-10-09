@@ -2,8 +2,9 @@
 #define TEXTURE_H
 
 #include <string>
-#include <GL/glew.h>
 #include <SFML/Graphics.hpp>
+#include "glad.h"
+
 class Texture{
 
     public:
