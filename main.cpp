@@ -5,7 +5,7 @@
 #include "include/ShaderProgram.h"
 #include "include/Texture.h"
 #include "include/Vertex.h"
-
+#include "include/ResourceManager.h"
 
 int main(){
     sf::Window window(sf::VideoMode(800, 600), "OpenGL");
@@ -43,8 +43,8 @@ int main(){
 
     glBindVertexArray(0);
 
-    ShaderProgram program("vertex.glsl", "fragment.glsl");
-    program.Use();
+    auto program = ResourceManager::load_shader("vertex.glsl", "fragment.glsl", "default");
+
 
     Texture tex("man.png");
 
