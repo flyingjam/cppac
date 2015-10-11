@@ -16,11 +16,11 @@ class ResourceManager{
         static std::unordered_map<std::string, Texture> textures;
 
         static ShaderProgram load_shader(const std::string& vertex,
-                const std::string& fragment, const std::string& name);
-        static ShaderProgram get_shader(const std::string& name);
+                const std::string& fragment, std::string name);
+        static ShaderProgram get_shader( std::string name);
 
-        static Texture load_texture(const std::string& path, const std::string& name);
-        static Texture get_texture(const std::string& name); 
+        static Texture load_texture(const std::string& path,  std::string name);
+        static Texture get_texture( std::string name); 
 
         static void clear();
     private:

@@ -5,23 +5,23 @@ std::unordered_map<std::string, ShaderProgram> ResourceManager::shaders;
 std::unordered_map<std::string, Texture> ResourceManager::textures;
 
 ShaderProgram ResourceManager::load_shader(const std::string& vertex,
-                const std::string& fragment, const std::string& name){
+                const std::string& fragment, std::string name){
     ShaderProgram program(vertex, fragment);
     shaders[name] = program;
     return shaders[name]; 
 }
 
-ShaderProgram ResourceManager::get_shader(const std::string& name){
+ShaderProgram ResourceManager::get_shader(std::string name){
     return shaders[name];
 }
 
-Texture ResourceManager::load_texture(const std::string& path, const std::string& name){
+Texture ResourceManager::load_texture(const std::string& path, std::string name){
     Texture tex(path);
     textures[name] = tex;
     return textures[name]; 
 }
 
-Texture ResourceManager::get_texture(const std::string& name){
+Texture ResourceManager::get_texture(std::string name){
     return textures[name];
 }
 

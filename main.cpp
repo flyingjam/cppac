@@ -6,7 +6,7 @@
 #include "include/Texture.h"
 #include "include/Vertex.h"
 #include "include/ResourceManager.h"
-
+#include "include/SpriteBatch.h"
 int main(){
     sf::Window window(sf::VideoMode(800, 600), "OpenGL");
     //glewInit();
@@ -45,9 +45,9 @@ int main(){
 
     auto program = ResourceManager::load_shader("vertex.glsl", "fragment.glsl", "default");
 
-
-    Texture tex("man.png");
-
+	SpriteBatch batch;
+	batch.set_shader(program);
+	auto tex = ResourceManager::load_texture("man.png", "man");
     while (true){
         sf::Event event;
         while(window.pollEvent(event)){
@@ -56,12 +56,13 @@ int main(){
         }
 
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        tex.bind();
-        program.Use();
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0);
+		for(int i = 0; i < 500; i++){
+			batch.draw(tex, 10, 10, 30, 40);
+		}
+		batch.end();
         window.display();
     }
+
+	ResourceManager::clear();
     return 0;
 }

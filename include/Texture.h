@@ -12,8 +12,8 @@ class Texture{
 
         int width, height;
 
-        Texture();
-        Texture(const std::string filepath);
+		Texture();
+		Texture(const std::string& filepath);
 
         void bind() const;
         void unbind() const;

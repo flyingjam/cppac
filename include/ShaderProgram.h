@@ -13,11 +13,6 @@ class ShaderProgram{
     private:
 
         GLint get_uniform_location(const std::string& uniform);
-    
-        GLuint vertex_shader;
-        GLuint fragment_shader;
-        GLuint program;
-
         std::string read_shader(const std::string& filename);
         GLuint create_shader(GLenum shader_type, std::string source);
         GLuint create_program(const std::string& vertex, const std::string& fragment);

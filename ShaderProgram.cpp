@@ -54,11 +54,11 @@ GLuint ShaderProgram::create_program(const std::string& vertex, const std::strin
 	
 	//Read in and create the vertex shader
 	std::string vertex_source = read_shader(vertex);
-	vertex_shader = create_shader(GL_VERTEX_SHADER, vertex_source);
+	GLuint vertex_shader = create_shader(GL_VERTEX_SHADER, vertex_source);
 
 	//Read in and create the fragment shader
 	std::string fragment_source = read_shader(fragment);
-	fragment_shader = create_shader(GL_FRAGMENT_SHADER, fragment_source);
+	GLuint fragment_shader = create_shader(GL_FRAGMENT_SHADER, fragment_source);
 
 	//Create the program and attatch boths haders
 	GLuint shader_program = glCreateProgram();
@@ -73,7 +73,6 @@ GLuint ShaderProgram::create_program(const std::string& vertex, const std::strin
         glDeleteShader(fragment_shader);
 
 	//return
-        program = shader_program;
 	return shader_program;
 }
 
@@ -84,22 +83,25 @@ void ShaderProgram::set_program(const std::string& vertex, const std::string& fr
 void ShaderProgram::set_float(const std::string& name, const float value, bool use_shader){
     if(use_shader)
         Use();
-    glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+	GLint location = get_uniform_location(name);
+    glUniform1f(location, value);
 }
 void ShaderProgram::set_vec4(const std::string& name, const glm::vec4& value, bool use_shader){
-    if(use_shader)
-        Use();
-    glUniform4f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z, value.w);
+	glUniform4f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z, value.w);
 }
 
 void ShaderProgram::set_mat4(const std::string& name, const glm::mat4& value, bool use_shader){
     if(use_shader)
-        Use();
-    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+        this->Use();
+    glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 GLint ShaderProgram::get_uniform_location(const std::string& uniform){
-    return glGetUniformLocation(program, uniform.c_str());    
+	GLint location = glGetUniformLocation(this->ID, uniform.c_str());
+	if (location < 0){
+		std::cout << "FUCK";
+	}
+    return location;
 }
 
 

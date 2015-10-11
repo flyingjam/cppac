@@ -1,7 +1,14 @@
 #include "include/Texture.h"
 
-Texture::Texture(const std::string filepath){
-    //generate id
+
+Texture::Texture(){
+	ID = 0;
+	width = 0;
+	height = 0;
+}
+
+Texture::Texture(const std::string& filepath){
+	//generate id
     GLuint id;
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);

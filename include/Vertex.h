@@ -23,6 +23,7 @@ class Vertex{
         Vertex(float x, float y, float z, float tx, float ty);
         Vertex(float x, float y, float z);
         Vertex(float x, float y);
+		Vertex();
 };
 
 #endif
