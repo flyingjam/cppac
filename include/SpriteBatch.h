@@ -8,7 +8,7 @@
 #include "ShaderProgram.h"
 #include "Vertex.h"
 #include <glm/gtc/matrix_transform.hpp>
-
+#include "Sprite.h"
 const int MAX_SPRITE = 2048;
 
 struct sprite_info{
@@ -32,11 +32,14 @@ class SpriteBatch{
 		Texture current_texture;
        
 	public:
-        SpriteBatch();
+        SpriteBatch(int width, int height);
+		~SpriteBatch();
         void begin();
         void set_shader(ShaderProgram program);
 		void add_vertices(Vertex* v);
         void draw(Texture texture, float x, float y, float width, float height);
+		void draw(Sprite& sprite);
+		void draw(Animation& animation);
 		void flush(Texture texture);
         void end();
         

@@ -1,7 +1,7 @@
 #include "include/SpriteBatch.h"
 
-SpriteBatch::SpriteBatch(){
-	orthogonal_projection = glm::ortho(0.0, 800.0, 600.0, 0.0, -1.0, 1.0); 
+SpriteBatch::SpriteBatch(int width, int height){
+	orthogonal_projection = glm::ortho(0.f, (float)width, (float)height, 0.f, -1.f, 1.f); 
 
 	//Vertex Array
 	vertex_array = new Vertex[MAX_SPRITE * 4];
@@ -16,7 +16,7 @@ SpriteBatch::SpriteBatch(){
 		index_array[index+1] = 1 + (i*4);
 		index_array[index+2] = 2 + (i*4);
 
-		index_array[index+3] = 0 + (i*4);
+		index_array[index+3] = (i*4);
 		index_array[index+4] = 2 + (i*4);
 		index_array[index+5] = 3 + (i*4);
 	}
@@ -51,20 +51,62 @@ SpriteBatch::SpriteBatch(){
 	dynamic_vbo = vbo;
 	ebo = EBO;
 
-	next = 0;
+	next = 0;	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+}
+
+SpriteBatch::~SpriteBatch(){
+	glDeleteBuffers(1, &dynamic_vbo);
+	glDeleteBuffers(1, &ebo);
+	glDeleteVertexArrays(1, &vao);
+
+	delete [] vertex_array;
+	delete [] index_array;
 }
 
 void SpriteBatch::draw(Texture texture, float x, float y, float width, float height){
-	if(texture.ID != current_texture.ID || next >= MAX_SPRITE){
+	if(texture.ID != current_texture.ID || next + 4>= MAX_SPRITE){
 		flush(current_texture);
 		current_texture = texture;
 	}
 	else{
-		current_texture = texture;
-		add_vertices(&Vertex(x, y, 1.0, 0.0, 1.0));
-		add_vertices(&Vertex(x + width, y, 1.0, 1.0, 1.0));
-		add_vertices(&Vertex(x + width, y + height, 1.0, 1.0, 0.0));
-		add_vertices(&Vertex(x, y + height, 1.0, 0.0, 0.0));
+		//current_texture = texture;
+		add_vertices(&Vertex(x, y, 1.0, 0.0, 0.0));
+		add_vertices(&Vertex(x + width, y, 1.0, 30.0, 0.0));
+		add_vertices(&Vertex(x + width, y + height, 1.0, 30.0, 40.0));
+		add_vertices(&Vertex(x, y + height, 1.0, 0.0, 40.0));
+	}
+}
+
+void SpriteBatch::draw(Sprite& sprite){
+	if(sprite.texture.ID != current_texture.ID || next + 4 >= MAX_SPRITE){
+		flush(current_texture);
+		current_texture = sprite.texture;
+	}
+	else{
+		//todo memcpy the data... if I dare
+		add_vertices(&sprite.vertices[0]);
+		add_vertices(&sprite.vertices[1]);
+		add_vertices(&sprite.vertices[2]);
+		add_vertices(&sprite.vertices[3]);
+	}
+}
+
+void SpriteBatch::draw(Animation& animation){
+	Sprite* sprite = &animation.sprite;
+	if(sprite->texture.ID != current_texture.ID || next + 4 >= MAX_SPRITE){
+		flush(current_texture);
+		current_texture = sprite->texture;
+	}
+	else{
+		//todo memcpy the data... if I dare
+		add_vertices(&sprite->vertices[0]);
+		add_vertices(&sprite->vertices[1]);
+		add_vertices(&sprite->vertices[2]);
+		add_vertices(&sprite->vertices[3]);
 	}
 }
 
@@ -77,22 +119,35 @@ void SpriteBatch::end(){
 }
 
 void SpriteBatch::add_vertices(Vertex* v){
+	assert(next <= MAX_SPRITE);
 	vertex_array[next] = *v;
 	next++;
 }
 
 void SpriteBatch::flush(Texture texture){
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, dynamic_vbo);
-	glBufferData(GL_ARRAY_BUFFER, next * sizeof(Vertex), vertex_array, GL_STREAM_DRAW);
-	program.set_mat4("proj", orthogonal_projection, true);
 	texture.bind();
 
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, dynamic_vbo);
+	//glBufferData(GL_ARRAY_BUFFER, next * sizeof(Vertex), vertex_array, GL_STREAM_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, next * sizeof(Vertex), vertex_array);
+
+	//create projection matrix for texture coordinates
+	glm::mat4 texture_projection = glm::ortho(-1*(float)texture.width, (float)texture.width, -1*(float)texture.height, (float)texture.height, 1.f, 0.f);
+
+	//set uniforms
+	program.set_mat4("proj", orthogonal_projection, true);
+	program.set_mat4("frag_proj", texture_projection, false);
+
+	//Bind EBO and draw
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glDrawElements(GL_TRIANGLES, next*6, GL_UNSIGNED_INT, 0);
-	//glDrawArrays(GL_TRIANGLES, 0, next);
+
+	//unbind stuff
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+
 	next = 0;
 }

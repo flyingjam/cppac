@@ -7,6 +7,8 @@
 #include "include/Vertex.h"
 #include "include/ResourceManager.h"
 #include "include/SpriteBatch.h"
+#include "include/Sprite.h"
+
 int main(){
     sf::Window window(sf::VideoMode(800, 600), "OpenGL");
     //glewInit();
@@ -19,36 +21,27 @@ int main(){
     };
     */ 
 
-    Vertex vertices[] = {
-        Vertex(-0.5, -0.5, 1.0, 1.0, 1.0),
-        Vertex(0.5, -0.5, 1.0, 1.0, 0.0),
-        Vertex(0.0, 0.5, 1.0, 0.0, 0.0)
-    };
-
-    GLuint VAO;
-    glGenVertexArrays(1, &VAO);
-
-    glBindVertexArray(VAO);
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-    
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
 
     auto program = ResourceManager::load_shader("vertex.glsl", "fragment.glsl", "default");
 
-	SpriteBatch batch;
+	SpriteBatch batch(800, 600);
 	batch.set_shader(program);
 	auto tex = ResourceManager::load_texture("man.png", "man");
+	auto leaf = ResourceManager::load_texture("leaf.png", "leaf");
+	Animation sprite(leaf, 0, 0, 34, 50, 200.f, 200.f);
+	//sprite.add_frame(34, 0, 34, 50);
+	//sprite.add_frame(68, 0, 34, 50);
+	//sprite.add_frame(102, 0, 34, 50);
+	sprite.set_updates_per_second(5.f);
+	sprite.set_grid(34, 50);
+	sprite.add_grid_frame(0, 1, 3);
+	Sprite test(tex, 0, 0, 30, 40, 200.f, 200.f); 
+	sf::Clock clock;
+	float x = 100.f;
+	float y = 100.f;
+	double dt = 0;
     while (true){
+		sf::Time dt = clock.restart();
         sf::Event event;
         while(window.pollEvent(event)){
             if (event.type == sf::Event::Closed)
@@ -56,9 +49,10 @@ int main(){
         }
 
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-		for(int i = 0; i < 500; i++){
-			batch.draw(tex, 10, 10, 30, 40);
-		}
+		batch.draw(sprite);
+		y = y + (30 * dt.asSeconds());
+		sprite.set_position(x, y);
+		sprite.update(dt.asSeconds());
 		batch.end();
         window.display();
     }
